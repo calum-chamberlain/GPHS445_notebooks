@@ -1,14 +1,18 @@
 # VUW GPHS445: Observational Earthquake Seismology
 ## Jupyter notebooks for the GPHS445 course taught at Victoria University of Wellington
 
+[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 This repository contains relevant notebooks and links to notebooks to help students
-through practical observational seismology.
+through practical elements of observational seismology.
 
 The course covers:
-1. Recording and processed digital seismic data
+1. Recording and processing digital seismic data
     - How seismographs work
     - How digitizers work
     - Fourier transforms
+    - Filtering and resampling
     - Introduction to processing seismic data with [Obspy](http://docs.obspy.org/)
 2. Introduction to seismic waves
     - Main seismic wave types and fundamental properties

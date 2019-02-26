@@ -2,3 +2,5 @@ jupyter
 obspy
 matplotlib
 numpy
+pytest
+nbval
