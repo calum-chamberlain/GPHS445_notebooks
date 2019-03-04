@@ -10,11 +10,12 @@ through practical elements of observational seismology.
 
 The course covers:
 1. [Recording and processing digital seismic data](1_Processing_and_recording/README.md)
+    - [Introduction to Python](1_Processing_and_recording/0_Python.ipynb)
     - [How seismographs work](1_Processing_and_recording/1_Seismographs.ipynb)
     - [How digitizers work](1_Processing_and_recording/2_Digitizers.ipynb)
     - [Fourier transforms](1_Processing_and_recording/3_Fourier_Transforms.ipynb)
     - [Filtering and resampling](1_Processing_and_recording/4_Filtering_Resampling.ipynb)
-    - [Introduction to processing](1_Processing_and_recording/5_Intro_To_Obspy.ipynb) seismic data with [Obspy](http://docs.obspy.org/)
+    - [Introduction to Obspy](1_Processing_and_recording/5_Intro_To_Obspy.ipynb) seismic data with [Obspy](http://docs.obspy.org/)
 2. [Introduction to seismic waves](2_Seismic_waves/README.md)
     - [Main seismic wave types and fundamental properties](2_Seismic_waves/1_Seismic_Waves.ipynb)
     - [Reflection, refraction and conversion of phases](2_Seismic_waves/2_Transmission.ipynb)
