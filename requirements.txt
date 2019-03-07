@@ -1,6 +1,0 @@
-jupyter
-scipy>=1.2.0
-obspy
-pytest
-nbval
-basemap
