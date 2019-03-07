@@ -1,0 +1,13 @@
+name: gphs445
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7
+  - jupyter
+  - scipy>=1.2.0
+  - obspy
+  - pytest
+  - nbval
+  - cartopy
+  - basemap-data-hires
