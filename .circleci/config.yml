@@ -22,7 +22,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            conda create -n gphs445 -f environment.yml
+            conda env create -f environment.yml
             source activate gphs445
       # run tests!
       - run:
