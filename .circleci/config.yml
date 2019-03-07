@@ -28,7 +28,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            . venv/bin/activate
+            source activate gphs445
             py.test --nbval
       - store_artifacts:
           path: test-reports
