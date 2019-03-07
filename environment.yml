@@ -10,3 +10,4 @@ dependencies:
   - pytest
   - nbval
   - cartopy
+  - basemap-data-hires
