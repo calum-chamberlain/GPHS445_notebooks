@@ -27,7 +27,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            while read requirement; do conda install --yes $requirement; done < requirements.tx
+            conda install jupyter scipy>=1.2.0 obspy pytest nbval basemap
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
