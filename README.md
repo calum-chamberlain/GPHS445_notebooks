@@ -1,7 +1,7 @@
 # VUW GPHS445: Observational Earthquake Seismology
 ## Jupyter notebooks for the GPHS445 course taught at Victoria University of Wellington
 
-[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CircleCI](https://circleci.com/gh/calum-chamberlain/GPHS445_notebooks.svg?style=svg&circle-token=1a58ff80d0b826d24bf8b733e205775e545d9bee)](https://circleci.com/gh/calum-chamberlain/GPHS445_notebooks)
 
