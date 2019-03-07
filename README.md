@@ -5,6 +5,8 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CircleCI](https://circleci.com/gh/calum-chamberlain/GPHS445_notebooks.svg?style=svg&circle-token=1a58ff80d0b826d24bf8b733e205775e545d9bee)](https://circleci.com/gh/calum-chamberlain/GPHS445_notebooks)
 
+This is the devlopment branch!
+
 This repository contains relevant notebooks and links to notebooks to help students
 through practical elements of observational seismology.
 
