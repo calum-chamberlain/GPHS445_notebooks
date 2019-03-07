@@ -19,18 +19,11 @@ jobs:
 
     steps:
       - checkout
-      - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-
       - run:
           name: install dependencies
           command: |
             conda create -n gphs445 -f environment.yml
             source activate gphs445
-      - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-          paths:
-            - "venv"
       # run tests!
       - run:
           name: run tests
