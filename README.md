@@ -35,16 +35,21 @@ The course covers:
     
     
 ## How to use these notebooks
-1. Fork this repository
-2. Install the requirements (recommended to use [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html#id2)):
+1. If using github:
+    - Fork this repository;
+    - Clone (`git clone ...` where ... is the url given by the *big green button*) to your local machine
+1. If just downloading:
+    - Download using the *big green button*
+2. Change into the newly created directory;
+3. Install the requirements (recommended to use [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html#id2)):
     ```bash
     conda env create -f environment.yml  # Create an environment called gphs445
     source activate gphs445  # Activate the environment - You will need to do this everytime you use the notebooks
     ```
-3. Start jupyter in your repository directory and navigate to the notebook you 
-   want to work on.
-4. Save any changes you make in the notebook.
-5. When you want to back-up your changes, or when you are happy with them, commit the
+4. Start jupyter (run `jupyter notebook`) in your repository directory and navigate to the notebook you 
+   want to work on;
+5. Save any changes you make in the notebook;
+6. When you want to back-up your changes, or when you are happy with them, commit the
    changes and push to your upstream repository 
    (check out the [github cheatsheet](https://services.github.com/on-demand/downloads/github-git-cheat-sheet.pdf) for more commands):
    ```bash
