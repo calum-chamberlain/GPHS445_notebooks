@@ -1,8 +1,6 @@
 jupyter
+scipy>=1.2.0
 obspy
-matplotlib
-numpy
-scipy
 pytest
 nbval
-cartopy
+basemap

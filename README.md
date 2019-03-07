@@ -37,7 +37,7 @@ The course covers:
 1. Fork this repository
 2. Install the requirements (recommended to use [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html#id2)):
     ```bash
-    conda create -n gphs445  # Create an environment called gphs445
+    conda create -n gphs445 python=3.7  # Create an environment called gphs445
     source activate gphs445  # Activate the environment - You will need to do this everytime you use the notebooks
     # Install the requirements
     while read requirement; do conda install --yes $requirement; done < requirements.txt
