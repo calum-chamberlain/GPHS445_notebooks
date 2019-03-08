@@ -20,8 +20,9 @@ further examples and information for use.
 
 | Notebook | Reading |
 |---|---|
+|[Intro to Python](0_Python.ipynb) | [Python tutorial](https://docs.python.org/3/tutorial/) |
 |[Seismographs](1_Seismographs.ipynb) | Stein & Wysession, Chapter 6.6 |
 |[Digitizers](2_Digitizers.ipynb) | Stein & Wysession, Chapter 6.6 |
 |[Fourier Transforms](3_Fourier_Transforms.ipynb) | Stein & Wysession, Chapters 6.2-6.4 |
 |[Filtering and Resampling](4_Filtering_Resampling.ipynb) | Gubbins, Part 1, Chapter 4 |
-|[Introduction to obspy](5_Intro_To_Obspy.ipynb) | [Obspy tutorial](https://docs.obspy.org/tutorial/) |
+|[Introduction to Obspy](5_Intro_To_Obspy.ipynb) | [Obspy tutorial](https://docs.obspy.org/tutorial/) |
