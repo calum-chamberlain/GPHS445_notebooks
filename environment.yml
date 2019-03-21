@@ -11,3 +11,4 @@ dependencies:
   - nbval
   - cartopy
   - basemap-data-hires
+  - geographiclib

@@ -6,6 +6,8 @@
 [![CircleCI](https://circleci.com/gh/calum-chamberlain/GPHS445_notebooks.svg?style=svg&circle-token=1a58ff80d0b826d24bf8b733e205775e545d9bee)](https://circleci.com/gh/calum-chamberlain/GPHS445_notebooks)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/calum-chamberlain/GPHS445_notebooks/master)
 
+This is the devlopment branch!
+
 This repository contains relevant notebooks and links to notebooks to help students
 through practical elements of observational seismology.
 
