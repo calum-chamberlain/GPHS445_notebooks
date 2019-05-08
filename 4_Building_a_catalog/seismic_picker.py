@@ -102,6 +102,7 @@ def seismic_picker(st, event_in=None):
         "\tPicks can be deleted by hovering over them and pressing"
         " the middle button")
     fig.subplots_adjust(wspace=0, hspace=0)
+    fig.canvas.draw()
     plt.show()
     event_out = Event()
     for trace_id, picker in p_picks.items():
@@ -165,7 +166,9 @@ class Picker:
         else:
             return
         self.line.set_data(self.xs, self.ys)
-        self.line.figure.canvas.draw()
+        # self.line.figure.canvas.draw()  # This redraws the whole figure! Very expensive and unnecesary.
+        self.line.axes.draw_artist(self.line)
+        self.line.figure.canvas.blit(self.line.axes.bbox)
 
     def onpress(self, event):
         self.press = True
