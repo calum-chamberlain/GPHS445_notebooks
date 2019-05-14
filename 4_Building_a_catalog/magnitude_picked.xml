@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='utf-8'?>
+<q:quakeml xmlns:q="http://quakeml.org/xmlns/quakeml/1.2" xmlns="http://quakeml.org/xmlns/bed/1.2">
+  <eventParameters publicID="smi:local/26061587-9a46-4364-b306-13a7a41152a1">
+    <event publicID="smi:local/148d7fd0-30d0-473f-a219-f429db7628e5">
+      <pick publicID="smi:local/b976acff-6bbf-4f7c-8080-e61bd8d30193">
+        <time>
+          <value>2019-04-23T16:37:16.348394Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="DVHZ"></waveformID>
+        <phaseHint>P</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/b185e556-5d00-403f-970c-31b211dfd0fd">
+        <time>
+          <value>2019-04-23T16:37:19.253128Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PNHZ"></waveformID>
+        <phaseHint>P</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/3800ccf7-2806-42ae-8599-cd1ccf5eb50b">
+        <time>
+          <value>2019-04-23T16:37:16.908394Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="POWZ"></waveformID>
+        <phaseHint>P</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/c16edfbb-44c0-48d2-a93c-716e4e4441cc">
+        <time>
+          <value>2019-04-23T16:37:18.278393Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PRWZ"></waveformID>
+        <phaseHint>P</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/fe54643f-3225-4c40-a81b-88703adc0503">
+        <time>
+          <value>2019-04-23T16:37:16.783131Z</value>
+        </time>
+        <waveformID channelCode="HHZ" locationCode="10" networkCode="NZ" stationCode="TSZ"></waveformID>
+        <phaseHint>P</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/d3f8455d-28c3-4345-9119-bc91c42b1a40">
+        <time>
+          <value>2019-04-23T16:37:21.454740Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="DVHZ"></waveformID>
+        <phaseHint>IAML</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/6f30c22c-45c4-4ea9-bd65-37bf89bdb835">
+        <time>
+          <value>2019-04-23T16:37:27.356760Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PNHZ"></waveformID>
+        <phaseHint>IAML</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/27483e33-64fd-4192-bc2f-02a0c5a9db9e">
+        <time>
+          <value>2019-04-23T16:37:22.624860Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="POWZ"></waveformID>
+        <phaseHint>IAML</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/71ba7d3c-d0db-440a-988c-f7e6284039b4">
+        <time>
+          <value>2019-04-23T16:37:27.806820Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PRWZ"></waveformID>
+        <phaseHint>IAML</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/2edb9410-193c-4128-aee8-cb0ea9562d6e">
+        <time>
+          <value>2019-04-23T16:37:21.956220Z</value>
+        </time>
+        <waveformID channelCode="HHZ" locationCode="10" networkCode="NZ" stationCode="TSZ"></waveformID>
+        <phaseHint>IAML</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/11d83ed3-2b82-449e-b027-783655d7919b">
+        <time>
+          <value>2019-04-23T16:38:04.323260Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="DVHZ"></waveformID>
+        <phaseHint>END</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/d9334967-0fa0-4ce9-8957-bbd09306ed7d">
+        <time>
+          <value>2019-04-23T16:38:13.755880Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PNHZ"></waveformID>
+        <phaseHint>END</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/0761a614-6791-45b8-a2f9-ac4e300d6a58">
+        <time>
+          <value>2019-04-23T16:38:45.826780Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="POWZ"></waveformID>
+        <phaseHint>END</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/d5ddb789-0205-4e6a-b50a-e083af13038b">
+        <time>
+          <value>2019-04-23T16:38:49.180600Z</value>
+        </time>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PRWZ"></waveformID>
+        <phaseHint>END</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <pick publicID="smi:local/243d5ca1-73ce-4a3d-a2ef-08fbbc435048">
+        <time>
+          <value>2019-04-23T16:38:03.484800Z</value>
+        </time>
+        <waveformID channelCode="HHZ" locationCode="10" networkCode="NZ" stationCode="TSZ"></waveformID>
+        <phaseHint>END</phaseHint>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </pick>
+      <amplitude publicID="smi:local/f299d0d0-0c8b-49bd-a686-0c59a268bfb1">
+        <genericAmplitude>
+          <value>0.024395144785964606</value>
+        </genericAmplitude>
+        <type>A</type>
+        <pickID>smi:local/d3f8455d-28c3-4345-9119-bc91c42b1a40</pickID>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="DVHZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+      <amplitude publicID="smi:local/2bdff6c5-77f0-405c-9bc3-c28422b8cfe7">
+        <genericAmplitude>
+          <value>0.012337299910189503</value>
+        </genericAmplitude>
+        <type>A</type>
+        <pickID>smi:local/6f30c22c-45c4-4ea9-bd65-37bf89bdb835</pickID>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PNHZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+      <amplitude publicID="smi:local/cb352db8-8518-4835-907b-230155184150">
+        <genericAmplitude>
+          <value>0.16852967430940247</value>
+        </genericAmplitude>
+        <type>A</type>
+        <pickID>smi:local/27483e33-64fd-4192-bc2f-02a0c5a9db9e</pickID>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="POWZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+      <amplitude publicID="smi:local/7c6e4a7d-bec4-4a8e-8e13-03281a784a4c">
+        <genericAmplitude>
+          <value>0.16876300086590446</value>
+        </genericAmplitude>
+        <type>A</type>
+        <pickID>smi:local/71ba7d3c-d0db-440a-988c-f7e6284039b4</pickID>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PRWZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+      <amplitude publicID="smi:local/ae02d4cd-1ae3-43ed-badd-6dbf1f0cfa23">
+        <genericAmplitude>
+          <value>0.2180762809974366</value>
+        </genericAmplitude>
+        <type>A</type>
+        <pickID>smi:local/2edb9410-193c-4128-aee8-cb0ea9562d6e</pickID>
+        <waveformID channelCode="HHZ" locationCode="10" networkCode="NZ" stationCode="TSZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+      <amplitude publicID="smi:local/c432ecf2-4e43-400a-bfe5-755a8d8b0424">
+        <genericAmplitude>
+          <value>47.974866</value>
+        </genericAmplitude>
+        <type>END</type>
+        <pickID>smi:local/11d83ed3-2b82-449e-b027-783655d7919b</pickID>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="DVHZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+      <amplitude publicID="smi:local/4a9f9fbc-6bb2-4979-a754-f4ce19410c89">
+        <genericAmplitude>
+          <value>54.502752</value>
+        </genericAmplitude>
+        <type>END</type>
+        <pickID>smi:local/d9334967-0fa0-4ce9-8957-bbd09306ed7d</pickID>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PNHZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+      <amplitude publicID="smi:local/531f7337-972c-4c11-971d-08eb164f53c8">
+        <genericAmplitude>
+          <value>88.918386</value>
+        </genericAmplitude>
+        <type>END</type>
+        <pickID>smi:local/0761a614-6791-45b8-a2f9-ac4e300d6a58</pickID>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="POWZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+      <amplitude publicID="smi:local/69b9f79a-7832-4d4c-89d6-91e8fe46078f">
+        <genericAmplitude>
+          <value>90.902207</value>
+        </genericAmplitude>
+        <type>END</type>
+        <pickID>smi:local/d5ddb789-0205-4e6a-b50a-e083af13038b</pickID>
+        <waveformID channelCode="EHZ" locationCode="10" networkCode="NZ" stationCode="PRWZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+      <amplitude publicID="smi:local/836db577-7f04-4516-8ffd-631d04857c12">
+        <genericAmplitude>
+          <value>46.701669</value>
+        </genericAmplitude>
+        <type>END</type>
+        <pickID>smi:local/243d5ca1-73ce-4a3d-a2ef-08fbbc435048</pickID>
+        <waveformID channelCode="HHZ" locationCode="10" networkCode="NZ" stationCode="TSZ"></waveformID>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <author>calumch</author>
+        </creationInfo>
+      </amplitude>
+    </event>
+  </eventParameters>
+</q:quakeml>

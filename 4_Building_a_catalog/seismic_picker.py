@@ -36,7 +36,7 @@ def seismic_picker(st, event_in=None):
     style.use("ggplot")
     st = st.merge()
     st.sort(
-        ["starttime", "network", "station", "location", "channel"])
+        ["network", "station", "location", "channel", "starttime"])
     plot_start = min([tr.stats.starttime for tr in st]).datetime
     plot_end = max([tr.stats.endtime for tr in st]).datetime
     n_traces = len(st)
@@ -70,7 +70,7 @@ def seismic_picker(st, event_in=None):
                 s_pick_time = linked_s_picks[0].time
             # Get linked amplitudes
             linked_amplitudes = [
-                a for a in event.amplitudes
+                a for a in event_in.amplitudes
                 if a.waveform_id.get_seed_string() == tr.id]
             linked_amplitude_points = [
                 a for a in linked_amplitudes if a.type != 'END']
@@ -124,8 +124,8 @@ def seismic_picker(st, event_in=None):
                            marker="o", markerfacecolor="r"))
             else:
                 amplitude_pick = col.add_line(
-                    Line2D(xdata=[], ydata=[], marker="o",
-                           markerfacecolor="r"))
+                    Line2D(xdata=[], ydata=[], marker="+",
+                           markerfacecolor="r", alpha=0.5))
             if duration is not None:
                 duration_pick = col.add_line(
                     Line2D(xdata=[duration["time"].datetime,
@@ -251,7 +251,7 @@ class Picker:
                 self.time = UTCDateTime(num2date(event.xdata))
                 self.amplitude = event.ydata
                 print("Amplitude pick made at {0} with amplitude "
-                      "{1:.2f}".format(self.time, self.amplitude))
+                      "{1:.2g}".format(self.time, self.amplitude))
             elif self.button == "e":
                 self.xs = [num2date(event.xdata), num2date(event.xdata)]
                 self.ys = list(self.line.axes.get_ylim())
