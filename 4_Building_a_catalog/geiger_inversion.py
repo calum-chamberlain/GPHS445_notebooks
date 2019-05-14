@@ -132,11 +132,12 @@ def geiger_locate_lat_lon(p_times, p_locations, s_times, s_locations, vp, vs,
         starting_depth=starting_depth, plot=plot)
     
     # convert location back to lat lon
+    model_time = _time + model["time"]
     model = Location(x=model["x"], y=model["y"], z=model["z"], origin=origin,
                      strike=0, dip=90)
-    print(model)
     model = model.to_geographic()
-    return {"lat": model.latitude, "lon": model.longitude, "z": model.depth}
+    return {"lat": model.latitude, "lon": model.longitude, "z": model.depth,
+            "time": model_time}
 
 
 def geiger_locate(p_times, p_locations, s_times, s_locations, vp, vs,
