@@ -12,6 +12,122 @@ import logging
 LOGGER = logging.getLogger("Geiger")
 
 
+def seisan_hyp(event, inventory, velocities, vpvs):
+    """
+    Use SEISANS Hypocentre program to locate an event.
+    """
+    import subprocess
+    import os
+    from obspy.core.event import Origin
+    from obspy.io.nordic.core import write_select, read_nordic
+    
+    # Write STATION0.HYP file
+    _write_station0(inventory, velocities, vpvs)
+    
+    subprocess.call(['remodl'])
+    subprocess.call(['setbrn'])
+    
+    event_unlocated = event.copy()
+    try:
+        old_origin = event.preferred_origin() or event.origins[0]
+        origin = Origin(time=old_origin.time)
+    except IndexError:
+        origin = Origin(time=sorted(event.picks, key=lambda p: p.time)[0].time)
+    event_unlocated.origins = [origin]
+    event_unlocated.write(format="NORDIC", filename="to_be_located")
+    subprocess.call(['hyp', "to_be_located"])
+    event_back = read_nordic("hyp.out")
+    event_out = event.copy()
+    # Just add in an origin
+    event_out.origins.append(event_back[0].origins[0])
+    # Clean up
+    files_to_remove = [
+        "hyp.out", "to_be_located", "remodl.tbl", "remodl1.lis", "remodl2.lis",
+        "print.out", "gmap.cur.kml", "hypmag.out", "hypsum.out", "remodl.hed",
+        "IASP91_linux.HED", "IASP91_linux.TBL", "setbrn1.lis", "setbrn2.lis",
+        "setbrn3.lis", "STATION0.HYP"]
+    for f in files_to_remove:
+        if os.path.isfile(f):
+            os.remove(f)
+    return event_out
+
+def _stationtoseisan(station):
+    """
+    Convert obspy inventory to string formatted for Seisan STATION0.HYP file.
+
+    :type station: obspy.core.inventory.station.Station
+    :param station: Inventory containing a single station.
+
+    :returns: str
+
+    .. note:: Only works to the low-precision level at the moment (see seisan \
+        manual for explanation).
+    """
+
+    if station.latitude < 0:
+        lat_str = 'S'
+    else:
+        lat_str = 'N'
+    if station.longitude < 0:  # Stored in =/- 180, not 0-360
+        lon_str = 'W'
+    else:
+        lon_str = 'E'
+    if len(station.code) > 4:
+        sta_str = station.code[0:4]
+    else:
+        sta_str = station.code.ljust(4)
+    if len(station.channels) > 0:
+        depth = station.channels[0].depth
+    else:
+        msg = 'No depth found in station.channels, have you set the level ' +\
+              'of stationXML download to channel if using obspy.get_stations?'
+        raise IOError(msg)
+    elev = str(int(round(station.elevation - depth))).rjust(4)
+    # lat and long are written in STATION0.HYP in deg,decimal mins
+    lat = abs(station.latitude)
+    lat_degree = int(lat)
+    lat_decimal_minute = (lat - lat_degree) * 60
+    lon = abs(station.longitude)
+    lon_degree = int(lon)
+    lon_decimal_minute = (lon - lon_degree) * 60
+    lat = ''.join([str(int(abs(lat_degree))),
+                   '{0:.2f}'.format(lat_decimal_minute).rjust(5)])
+    lon = ''.join([str(int(abs(lon_degree))),
+                   '{0:.2f}'.format(lon_decimal_minute).rjust(5)])
+    station_str = ''.join(['  ', sta_str, lat, lat_str, lon, lon_str, elev])
+    return station_str
+
+
+def _write_station0(inventory, velocities, vpvs):
+    out = (
+        "RESET TEST(02)=500.0\nRESET TEST(07)=-3.0\nRESET TEST(08)=2.6\n"
+        "RESET TEST(09)=0.001\nRESET TEST(11)=99.0\nRESET TEST(13)=5.0\n"
+        "RESET TEST(34)=1.5\nRESET TEST(35)=2.5\nRESET TEST(36)=0.0\n"
+        "RESET TEST(41)=20000.0\nRESET TEST(43)=5.0\nRESET TEST(51)=3.6\n"
+        "RESET TEST(50)=1.0\nRESET TEST(56)= 1.0\nRESET TEST(58)= 99990.0\n"
+        "RESET TEST(40)=0.0\nRESET TEST(60)=0.0\nRESET TEST(71)=1.0\n"
+        "RESET TEST(75)=1.0\nRESET TEST(76)=0.910\nRESET TEST(77)=0.00087\n"
+        "RESET TEST(78)=-1.67\nRESET TEST(79)=1.0\nRESET TEST(80)=3.0\n"
+        "RESET TEST(81)=1.0\nRESET TEST(82)=1.0\nRESET TEST(83)=1.0\n"
+        "RESET TEST(88)=1.0\nRESET TEST(85)=0.1\nRESET TEST(91)=0.1\n")
+    for network in inventory:
+        for station in network:
+            out += "\n" + _stationtoseisan(station)
+    out += "\n\n"
+    # Add velocity model
+    for layer in velocities:
+        if "moho" in layer.keys() and layer["moho"]:
+            out += "{0:7.3f}   {1:7.3f}    N     \n".format(
+                layer["velocity"], layer["top"])
+        else:
+            out += "{0:7.3f}   {1:7.3f}\n".format(
+                layer["velocity"], layer["top"])
+    out += "\n\n15.0 1100.2200. {0:.2f} \nTES\n".format(vpvs)
+    with open("STATION0.HYP", "w") as f:
+        f.write(out)
+    return
+
+
 def update_model(p_times, p_locations, s_times, s_locations, model, vp, vs):
     """
     Recompute model to minimise residuals.
