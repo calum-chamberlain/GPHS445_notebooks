@@ -46,8 +46,8 @@ def seismic_picker(st, event_in=None):
     p_picks, s_picks, amplitude_picks, duration_picks = ({}, {}, {}, {})
     for row, tr in zip(axes, st):
         # Get linked pick
-        p_pick_time, s_pick_time, amplitude, duration = (
-            None, None, None, None)
+        p_pick_time, s_pick_time, amplitude, duration, polarity = (
+            None, None, None, None, None)
         if event_in is not None:
             linked_picks = [
                 p for p in event_in.picks
@@ -60,6 +60,16 @@ def seismic_picker(st, event_in=None):
                         len(linked_p_picks), tr.id, linked_p_picks[0].time))
             if len(linked_p_picks) > 0:
                 p_pick_time = linked_p_picks[0].time
+                try:
+                    polarity = linked_p_picks[0].polarity
+                    if polarity == "positive":
+                        polarity = "up"
+                    elif polarity == "negative":
+                        polarity = "down"
+                    else:
+                        polarity = None
+                except AttributeError:
+                    polarity = None
             # Get linked S phases
             linked_s_picks = [p for p in linked_picks if p.phase_hint == "S"]
             if len(linked_s_picks) > 1:
@@ -137,7 +147,8 @@ def seismic_picker(st, event_in=None):
                     Line2D(xdata=[], ydata=[], color="k", linestyle="--"))
 
             p_picks.update(
-                {tr.id: Picker(p_pick_line, button=1)})
+                {tr.id: Picker(p_pick_line, button=1, polarity=polarity,
+                               allow_polarity=True)})
             s_picks.update(
                 {tr.id: Picker(s_pick_line, button=3)})
             amplitude_picks.update(
@@ -148,7 +159,8 @@ def seismic_picker(st, event_in=None):
         "Make your picks using:\n"
         "\tleft mouse button: P\n\tright mouse button: S\n\t'a': amplitude"
         " at mouse location\n\t'e': end duration at mouse location - needs a "
-        "P-pick to calculate duration\n\n"
+        "P-pick to calculate duration\n\tP-wave polarity can be picked using "
+        "the up and down arrows while hovering over a P-pick.\n\n"
         "Picks can be deleted by hovering over them and pressing"
         " the middle mouse button")
     fig.subplots_adjust(wspace=0, hspace=0)
@@ -157,10 +169,16 @@ def seismic_picker(st, event_in=None):
     event_out = Event()
     for trace_id, picker in p_picks.items():
         if picker.time is not None:
+            if picker.polarity == "up":
+                polarity = "positive"
+            elif picker.polarity == "down":
+                polarity = "negative"
+            else:
+                polarity = "undecidable"
             event_out.picks.append(Pick(
                 phase_hint="P", time=picker.time,
                 waveform_id=WaveformStreamID(seed_string=trace_id),
-                evaluation_mode="manual",
+                evaluation_mode="manual", polarity=polarity,
                 creation_info=CreationInfo(author=getpass.getuser())))
     for trace_id, picker in s_picks.items():
         if picker.time is not None:
@@ -212,12 +230,15 @@ def seismic_picker(st, event_in=None):
 
 
 class Picker:
-    def __init__(self, line, button=1, delete_threshold=0.2):
+    def __init__(self, line, button=1, delete_threshold=0.2,
+                 allow_polarity=False, polarity=None):
         if button == 2:
             raise IOError("Middle mouse button reserved for pick deletion")
         self.line = line
         self.button = button
         self.delete_threshold = delete_threshold
+        self.allow_polarity = allow_polarity
+        self.polarity = polarity
         self.xs = list(line.get_xdata())
         self.ys = list(line.get_ydata())
         if len(self.ys) == 1:
@@ -259,19 +280,25 @@ class Picker:
                 print("Duration end pick made at {0}".format(self.time))
             else:
                 print("I only know what to do with a and e")
-        elif event.key == 2:
-            # Delete the pick
+        # elif event.key == 2:
+        #     # Delete the pick
+        #     if self.time is not None:
+        #         diff = abs((self.xs[0] - num2date(event.xdata)).total_seconds())
+        #         if diff < self.delete_threshold:
+        #             self.xs = []
+        #             self.ys = []
+        #             print("Deleted pick at time {0}".format(self.time))
+        #             self.time = None
+        #             self.line.set_data(self.xs, self.ys)
+        #             self.line.axes.draw_artist(self.line)
+        #             self.line.figure.canvas.draw()
+        #             return
+        elif event.key in ["up", "down"] and self.allow_polarity:
             if self.time is not None:
                 diff = abs((self.xs[0] - num2date(event.xdata)).total_seconds())
                 if diff < self.delete_threshold:
-                    self.xs = []
-                    self.ys = []
-                    print("Deleted pick at time {0}".format(self.time))
-                    self.time = None
-                    self.line.set_data(self.xs, self.ys)
-                    self.line.axes.draw_artist(self.line)
-                    self.line.figure.canvas.draw()
-                    return
+                    print("Polarity {0} recorded".format(event.key))
+                    self.polarity = event.key
         else:
             return
         self.line.set_data(self.xs, self.ys)
