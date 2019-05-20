@@ -27,11 +27,14 @@ def seismic_picker(st, event_in=None):
     from obspy import UTCDateTime
     from obspy.core.event import (
         Event, Pick, WaveformStreamID, CreationInfo, Amplitude)
+    from datetime import timezone
 
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
     from matplotlib.lines import Line2D
     from matplotlib import style
+
+    utc = timezone.utc
 
     style.use("ggplot")
     st = st.merge()
@@ -115,21 +118,24 @@ def seismic_picker(st, event_in=None):
             col.set_xlim([plot_start, plot_end])
             if p_pick_time is not None:
                 p_pick_line = col.add_line(
-                    Line2D(xdata=[p_pick_time.datetime, p_pick_time.datetime],
+                    Line2D(xdata=[p_pick_time.datetime.replace(tzinfo=utc),
+                                  p_pick_time.datetime.replace(tzinfo=utc)],
                            ydata=list(col.get_ylim()), color='r'))
             else:
                 p_pick_line = col.add_line(
                     Line2D(xdata=[], ydata=[], color="r"))
             if s_pick_time is not None:
                 s_pick_line = col.add_line(
-                    Line2D(xdata=[s_pick_time.datetime, s_pick_time.datetime],
+                    Line2D(xdata=[s_pick_time.datetime.replace(tzinfo=utc),
+                                  s_pick_time.datetime.replace(tzinfo=utc)],
                            ydata=list(col.get_ylim()), color="b"))
             else:
                 s_pick_line = col.add_line(
                     Line2D(xdata=[], ydata=[], color="b"))
             if amplitude is not None:
                 amplitude_pick = col.add_line(
-                    Line2D(xdata=[amplitude["time"].datetime],
+                    Line2D(xdata=[amplitude["time"].datetime.replace(
+                               tzinfo=utc)],
                            ydata=[amplitude["amplitude"]],
                            marker="o", markerfacecolor="r"))
             else:
@@ -138,8 +144,9 @@ def seismic_picker(st, event_in=None):
                            markerfacecolor="r", alpha=0.5))
             if duration is not None:
                 duration_pick = col.add_line(
-                    Line2D(xdata=[duration["time"].datetime,
-                                  duration["time"].datetime],
+                    Line2D(xdata=[
+                        duration["time"].datetime.replace(tzinfo=utc),
+                        duration["time"].datetime.replace(tzinfo=utc)],
                            ydata=list(col.get_ylim()),
                            color="k", linestyle="--"))
             else:
@@ -148,13 +155,13 @@ def seismic_picker(st, event_in=None):
 
             p_picks.update(
                 {tr.id: Picker(p_pick_line, button=1, polarity=polarity,
-                               allow_polarity=True)})
+                               allow_polarity=True, tr_id=tr.id)})
             s_picks.update(
-                {tr.id: Picker(s_pick_line, button=3)})
+                {tr.id: Picker(s_pick_line, button=3, tr_id=tr.id)})
             amplitude_picks.update(
-                {tr.id: Picker(amplitude_pick, button='a')})
+                {tr.id: Picker(amplitude_pick, button='a', tr_id=tr.id)})
             duration_picks.update(
-                {tr.id: Picker(duration_pick, button='e')})
+                {tr.id: Picker(duration_pick, button='e', tr_id=tr.id)})
     print(
         "Make your picks using:\n"
         "\tleft mouse button: P\n\tright mouse button: S\n\t'a': amplitude"
@@ -166,7 +173,16 @@ def seismic_picker(st, event_in=None):
     fig.subplots_adjust(wspace=0, hspace=0)
     fig.canvas.draw()
     plt.show()
-    event_out = Event()
+    if event_in is None:
+        event_out = Event()
+    else:
+        event_out = event_in.copy()
+        # we want to keep only the picks that we haven't changed
+        unchanged_picks = [
+            p for p in event_out.picks 
+            if p.waveform_id.get_seed_string() not in [
+                tr.id for tr in st]]
+        event_out.picks = unchanged_picks
     for trace_id, picker in p_picks.items():
         if picker.time is not None:
             if picker.polarity == "up":
@@ -231,7 +247,7 @@ def seismic_picker(st, event_in=None):
 
 class Picker:
     def __init__(self, line, button=1, delete_threshold=0.2,
-                 allow_polarity=False, polarity=None):
+                 allow_polarity=False, polarity=None, tr_id=None):
         if button == 2:
             raise IOError("Middle mouse button reserved for pick deletion")
         self.line = line
@@ -241,6 +257,7 @@ class Picker:
         self.polarity = polarity
         self.xs = list(line.get_xdata())
         self.ys = list(line.get_ydata())
+        self.tr_id = tr_id
         if len(self.ys) == 1:
             self.amplitude = self.ys[0]
         else:
@@ -280,24 +297,12 @@ class Picker:
                 print("Duration end pick made at {0}".format(self.time))
             else:
                 print("I only know what to do with a and e")
-        # elif event.key == 2:
-        #     # Delete the pick
-        #     if self.time is not None:
-        #         diff = abs((self.xs[0] - num2date(event.xdata)).total_seconds())
-        #         if diff < self.delete_threshold:
-        #             self.xs = []
-        #             self.ys = []
-        #             print("Deleted pick at time {0}".format(self.time))
-        #             self.time = None
-        #             self.line.set_data(self.xs, self.ys)
-        #             self.line.axes.draw_artist(self.line)
-        #             self.line.figure.canvas.draw()
-        #             return
         elif event.key in ["up", "down"] and self.allow_polarity:
             if self.time is not None:
                 diff = abs((self.xs[0] - num2date(event.xdata)).total_seconds())
                 if diff < self.delete_threshold:
-                    print("Polarity {0} recorded".format(event.key))
+                    print("Polarity {0} recorded for {1}".format(
+                        event.key, self.tr_id))
                     self.polarity = event.key
         else:
             return
