@@ -121,7 +121,8 @@ def _cleanup():
         "print.out", "gmap.cur.kml", "hypmag.out", "hypsum.out", "remodl.hed",
         "IASP91_linux.HED", "IASP91_linux.TBL", "setbrn1.lis", "setbrn2.lis",
         "setbrn3.lis", "STATION0.HYP", "focmec.dat", "focmec.inp", "fort.17",
-        "fps.out", "hash_seisan.out", "pspolar.inp"]
+        "fps.out", "hash_seisan.out", "pspolar.inp", "scratch1.out",
+        "scratch2.out", "scratch3.out"]
     for f in files_to_remove:
         if os.path.isfile(f):
             os.remove(f)
