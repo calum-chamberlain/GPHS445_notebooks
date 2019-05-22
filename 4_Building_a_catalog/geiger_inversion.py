@@ -12,14 +12,77 @@ import logging
 LOGGER = logging.getLogger("Geiger")
 
 
-def seisan_hyp(event, inventory, velocities, vpvs):
+def seisan_hash(event, inventory, velocities, vpvs, search_angle=2, 
+                min_incorrect=1, ratio_error=0.2, angle_prob=10,
+                multiple_threshold=0.1, clean=True):
     """
-    Use SEISANS Hypocentre program to locate an event.
+    Use SEISAN's implementation of HASH to compute the focal mechanism of an
+    event.
+
+    :note: 
+        Requires command line version of driver to be installed. This is
+        provided alongside this code as gphs445_hash.for and should be copied
+        to your PRO directory as hash_seisan.for - this can be built by running
+        `make all` in your PRO directory.
     """
     import subprocess
+    from obspy.core.event import (
+        QuantityError, NodalPlane, NodalPlanes, FocalMechanism,
+        ResourceIdentifier)
+
+    event_back = seisan_hyp(
+        event=event, inventory=inventory, velocities=velocities, vpvs=vpvs,
+        clean=False)
+    subprocess.call(
+        ["hash_seisan", str(search_angle), str(min_incorrect),
+         str(ratio_error), str(angle_prob), str(multiple_threshold)])
+    focal_mechanisms = _read_hash()
+    for mechanism in focal_mechanisms:
+        nodal_p = NodalPlane(
+            strike=mechanism["strike"], dip=mechanism["dip"],
+            rake=mechanism["rake"])
+        fm = FocalMechanism(nodal_planes=NodalPlanes(nodal_plane_1=nodal_p))
+        fm.method_id = ResourceIdentifier(
+            "smi:nc.anss.org/focalMehcanism/HASH")
+        event_back.focal_mechanisms.append(fm)
+    if clean:
+        _cleanup()
+    return event_back
+
+
+def _read_hash():
     import os
+    if not os.path.isfile("hash_seisan.out"):
+        Logger.error("hash_seisan.out not found")
+        return []
+    with open("hash_seisan.out", "r") as f:
+        lines = f.read().splitlines()
+    focal_mechanisms, focal_mechanism = ([], None)
+    for line in lines:
+        if line.startswith("Strike,dip,rake"):
+            if focal_mechanism:
+                focal_mechanisms.append(focal_mechanism)
+            focal_mechanism = {
+                "strike": float(line.split()[-3]),
+                "dip": float(line.split()[-2]),
+                "rake": float(line.split()[-1])}
+        elif line.startswith("Fault+aux plane uncertainty"):
+            focal_mechanism.update({
+                "uncertainty 1": float(line.split()[-2]),
+                "uncertainty_2": float(line.split()[-1])})
+    if focal_mechanism:
+        focal_mechanisms.append(focal_mechanism)
+    return focal_mechanisms
+
+
+def seisan_hyp(event, inventory, velocities, vpvs, clean=True):
+    """
+    Use SEISAN's Hypocentre program to locate an event.
+    """
+    import warnings
+    import subprocess
     from obspy.core.event import Origin
-    from obspy.io.nordic.core import write_select, read_nordic
+    from nordic_io.core import write_select, read_nordic
     
     # Write STATION0.HYP file
     _write_station0(inventory, velocities, vpvs)
@@ -34,22 +97,36 @@ def seisan_hyp(event, inventory, velocities, vpvs):
     except IndexError:
         origin = Origin(time=sorted(event.picks, key=lambda p: p.time)[0].time)
     event_unlocated.origins = [origin]
-    event_unlocated.write(format="NORDIC", filename="to_be_located")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        event_unlocated.write(format="NORDIC", filename="to_be_located")
     subprocess.call(['hyp', "to_be_located"])
-    event_back = read_nordic("hyp.out")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        event_back = read_nordic("hyp.out")
     event_out = event.copy()
-    # Just add in an origin
-    event_out.origins.append(event_back[0].origins[0])
+    # We lose some info in the round-trip to nordic
+    event_out.origins[0] = event_back[0].origins[0]
+    event_out.picks = event_back[0].picks
+    if clean:
+        _cleanup()
+    return event_out
+
+def _cleanup():
+    import os
+
     # Clean up
     files_to_remove = [
         "hyp.out", "to_be_located", "remodl.tbl", "remodl1.lis", "remodl2.lis",
         "print.out", "gmap.cur.kml", "hypmag.out", "hypsum.out", "remodl.hed",
         "IASP91_linux.HED", "IASP91_linux.TBL", "setbrn1.lis", "setbrn2.lis",
-        "setbrn3.lis", "STATION0.HYP"]
+        "setbrn3.lis", "STATION0.HYP", "focmec.dat", "focmec.inp", "fort.17",
+        "fps.out", "hash_seisan.out", "pspolar.inp", "scratch1.out",
+        "scratch2.out", "scratch3.out"]
     for f in files_to_remove:
         if os.path.isfile(f):
             os.remove(f)
-    return event_out
+
 
 def _stationtoseisan(station):
     """
@@ -122,7 +199,7 @@ def _write_station0(inventory, velocities, vpvs):
         else:
             out += "{0:7.3f}   {1:7.3f}\n".format(
                 layer["velocity"], layer["top"])
-    out += "\n\n15.0 1100.2200. {0:.2f} \nTES\n".format(vpvs)
+    out += "\n15.0 1100.2200. {0:.2f} \nTES\n".format(vpvs)
     with open("STATION0.HYP", "w") as f:
         f.write(out)
     return
