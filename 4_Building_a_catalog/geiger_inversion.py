@@ -90,23 +90,24 @@ def seisan_hyp(event, inventory, velocities, vpvs, clean=True):
     subprocess.call(['remodl'])
     subprocess.call(['setbrn'])
     
-    event_unlocated = event.copy()
+    event_out = event.copy()
     try:
         old_origin = event.preferred_origin() or event.origins[0]
         origin = Origin(time=old_origin.time)
     except IndexError:
-        origin = Origin(time=sorted(event.picks, key=lambda p: p.time)[0].time)
-    event_unlocated.origins = [origin]
+        origin = Origin(
+            time=sorted(event.picks, key=lambda p: p.time)[0].time)
+    event_out.origins = [origin]
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        event_unlocated.write(format="NORDIC", filename="to_be_located")
+        event_out.write(format="NORDIC", filename="to_be_located")
     subprocess.call(['hyp', "to_be_located"])
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         event_back = read_nordic("hyp.out")
-    event_out = event.copy()
     # We lose some info in the round-trip to nordic
     event_out.origins[0] = event_back[0].origins[0]
+    event_out.magnitudes = event_back.magnitudes
     event_out.picks = event_back[0].picks
     if clean:
         _cleanup()
