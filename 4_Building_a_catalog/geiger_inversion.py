@@ -107,7 +107,7 @@ def seisan_hyp(event, inventory, velocities, vpvs, clean=True):
         event_back = read_nordic("hyp.out")
     # We lose some info in the round-trip to nordic
     event_out.origins[0] = event_back[0].origins[0]
-    event_out.magnitudes = event_back.magnitudes
+    event_out.magnitudes = event_back[0].magnitudes
     event_out.picks = event_back[0].picks
     if clean:
         _cleanup()
