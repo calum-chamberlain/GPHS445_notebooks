@@ -25,12 +25,13 @@ jobs:
             conda update -n base -c defaults conda            
             conda env create -f environment.yml
             source activate gphs445
+            pip install mplstereonet
       # run tests!
       - run:
           name: run tests
           command: |
             source activate gphs445
-            pytest --nbval
+            pytest --nbval --ignore 4_Building_a_catalog/5_Focal_Mechanisms.ipynb
       - store_artifacts:
           path: test-reports
           destination: test-reports
