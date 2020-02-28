@@ -100,6 +100,10 @@ def seisan_hyp(event, inventory, velocities, vpvs, clean=True):
     event_out.origins = [origin]
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
+        # Cope with a bug in obspy < 1.2.0
+        for amplitude in event_out.amplitudes:
+            if amplitude.magnitude_hint is None:
+                amplitude.magnitude_hint = "None"
         event_out.write(format="NORDIC", filename="to_be_located")
     subprocess.call(['hyp', "to_be_located"])
     with warnings.catch_warnings():

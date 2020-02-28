@@ -6,9 +6,12 @@ dependencies:
   - python=3.7
   - jupyter
   - scipy>=1.2.0
+  - numpy<1.17
   - obspy
   - pytest
   - nbval
   - cartopy
   - basemap-data-hires
   - geographiclib
+  - widgetsnbextension
+  - ipympl
