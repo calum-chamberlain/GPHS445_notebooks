@@ -17,14 +17,14 @@ The course covers:
     - [Fourier transforms](1_Processing_and_recording/3_Fourier_Transforms.ipynb)
     - [Filtering and resampling](1_Processing_and_recording/4_Filtering_Resampling.ipynb)
     - [Introduction to Obspy](1_Processing_and_recording/5_Intro_To_Obspy.ipynb) seismic data with [Obspy](http://docs.obspy.org/)
-2. [Seismic hazard](3_Hazard/README.md) *Incomplete*
-    - [Magnitude-frequency relations](3_Hazard/1_Magnitude_Frequency.ipynb)
-    - [Earthquake clustering](3_Hazard/2_Earthquake_Clustering.ipynb)
-    - [Aftershock forecasting](3_Hazard/3_Aftershock_Forecasting.ipynb)
-3. [Introduction to seismic waves](2_Seismic_waves/README.md) *Incomplete*
+2. [Introduction to seismic waves](2_Seismic_waves/README.md) *Incomplete*
     - [Main seismic wave types and fundamental properties](2_Seismic_waves/1_Seismic_Waves.ipynb)
     - [Reflection, refraction and conversion of phases](2_Seismic_waves/2_Transmission.ipynb)
     - [Dispersion and attenuation](2_Seismic_waves/3_Dispersion_and_Attenuation.ipynb)
+3. [Seismic hazard](3_Hazard/README.md) *Incomplete*
+    - [Magnitude-frequency relations](3_Hazard/1_Magnitude_Frequency.ipynb)
+    - [Earthquake clustering](3_Hazard/2_Earthquake_Clustering.ipynb)
+    - [Aftershock forecasting](3_Hazard/3_Aftershock_Forecasting.ipynb)
 4. [Building an earthquake catalog](4_Building_a_catalog/README.md)
     - [Earthquake detection](4_Building_a_catalog/1_Earthquake_Detection.ipynb)
     - [Phase picking](4_Building_a_catalog/2_Phase_Picking.ipynb)
