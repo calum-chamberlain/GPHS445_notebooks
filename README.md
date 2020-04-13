@@ -7,7 +7,8 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/calum-chamberlain/GPHS445_notebooks/master)
 
 This repository contains relevant notebooks and links to notebooks to help students
-through practical elements of observational seismology.
+through practical elements of observational seismology. This is **NOT** an exhaustive
+textbook for observational seismology.
 
 The course covers:
 1. [Recording and processing digital seismic data](1_Processing_and_recording/README.md)
