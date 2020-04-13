@@ -185,10 +185,13 @@ class SeismicPicker():
         self.fig.canvas.mpl_connect("close_event", self.process)
         self.fig.subplots_adjust(wspace=0, hspace=0)
         self.fig.canvas.draw_idle()
+        plt.pause(0.001)
 
     def pick(self):
         """ Enter the interactive plotting loop - blocking. """
+        plt.ion()
         plt.show(block=True)
+        print("Returning event")
         return self.event_out
 
     def show(self):
@@ -258,6 +261,8 @@ class SeismicPicker():
                 waveform_id=WaveformStreamID(seed_string=trace_id),
                 evaluation_mode="manual",
                 creation_info=CreationInfo(author=getpass.getuser())))
+        print("Finished processing event. Returning")
+        return
 
 
 class Picker:

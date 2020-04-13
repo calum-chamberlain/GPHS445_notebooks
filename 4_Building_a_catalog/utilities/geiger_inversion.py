@@ -12,30 +12,49 @@ import logging
 LOGGER = logging.getLogger("Geiger")
 
 
-def seisan_hash(event, inventory, velocities, vpvs, search_angle=2, 
-                min_incorrect=1, ratio_error=0.2, angle_prob=10,
-                multiple_threshold=0.1, clean=True):
+def seisan_hash(event, inventory, velocities, vpvs, seisan_path=None,
+                search_angle=2, min_incorrect=1, ratio_error=0.2,
+                angle_prob=10, multiple_threshold=0.1, clean=True):
     """
     Use SEISAN's implementation of HASH to compute the focal mechanism of an
     event.
-
-    :note: 
-        Requires command line version of driver to be installed. This is
-        provided alongside this code as gphs445_hash.for and should be copied
-        to your PRO directory as hash_seisan.for - this can be built by running
-        `make all` in your PRO directory.
     """
     import subprocess
+    import os
+    import platform
+
     from obspy.core.event import (
         QuantityError, NodalPlane, NodalPlanes, FocalMechanism,
         ResourceIdentifier)
 
+    seisan_path = seisan_path or os.environ["SEISAN_TOP"]
+    hash_path = os.path.join(seisan_path, "PRO", "hash")
+    if platform.system() == "Windows":
+        hash_path += ".exe"
+    if not os.path.isfile(hash_path):
+        raise FileNotFoundError(f"hash was not here: {hash_path}")
+
     event_back = seisan_hyp(
         event=event, inventory=inventory, velocities=velocities, vpvs=vpvs,
         clean=False)
-    subprocess.call(
-        ["hash_seisan", str(search_angle), str(min_incorrect),
-         str(ratio_error), str(angle_prob), str(multiple_threshold)])
+
+    p = subprocess.Popen(
+        hash_path, shell=True, stdin=subprocess.PIPE, 
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        universal_newlines=True)
+    prompt = p.stdout.readline()
+    assert prompt.startswith(" Grid angle for focal mech.")
+    responses = os.linesep.join(
+        str(resp) for resp in [search_angle, min_incorrect, ratio_error, 
+                               angle_prob, multiple_threshold])
+    stdout, stderr = p.communicate(responses)
+    print(stdout)
+    if stderr:
+        if "Note:" in stderr:
+            print(stderr)
+        else:
+            raise Exception(stderr)
+    p.terminate()
     focal_mechanisms = _read_hash()
     for mechanism in focal_mechanisms:
         nodal_p = NodalPlane(
@@ -52,10 +71,10 @@ def seisan_hash(event, inventory, velocities, vpvs, search_angle=2,
 
 def _read_hash():
     import os
-    if not os.path.isfile("hash_seisan.out"):
-        Logger.error("hash_seisan.out not found")
+    if not os.path.isfile("hash.out"):
+        Logger.error("hash.out not found")
         return []
-    with open("hash_seisan.out", "r") as f:
+    with open("hash.out", "r") as f:
         lines = f.read().splitlines()
     focal_mechanisms, focal_mechanism = ([], None)
     for line in lines:
@@ -306,7 +325,7 @@ def geiger_locate_lat_lon(p_times, p_locations, s_times, s_locations, vp, vs,
 
     :returns dict
     """
-    from coordinates import Geographic, Location
+    from .coordinates import Geographic, Location
 
     p_xyz = [Geographic(latitude=p["lat"], longitude=p["lon"], depth=p["z"])
              for p in p_locations]
