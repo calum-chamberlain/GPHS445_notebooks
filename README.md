@@ -35,7 +35,7 @@ The course covers:
     
 ## How to use these notebooks
 1. If using github:
-    - Fork this repository;
+    - Fork this repository (forking will allow you to keep your local changes seperate from changes here);
     - Clone (`git clone ...` where ... is the url given by the *big green button*) to your local machine
 1. If just downloading:
     - Download using the *big green button*
