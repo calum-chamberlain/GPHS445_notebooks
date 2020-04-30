@@ -7,7 +7,8 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/calum-chamberlain/GPHS445_notebooks/master)
 
 This repository contains relevant notebooks and links to notebooks to help students
-through practical elements of observational seismology.
+through practical elements of observational seismology. This is **NOT** an exhaustive
+textbook for observational seismology.
 
 The course covers:
 1. [Recording and processing digital seismic data](1_Processing_and_recording/README.md)
@@ -19,8 +20,7 @@ The course covers:
     - [Introduction to Obspy](1_Processing_and_recording/5_Intro_To_Obspy.ipynb) seismic data with [Obspy](http://docs.obspy.org/)
 2. [Introduction to seismic waves](2_Seismic_waves/README.md) *Incomplete*
     - [Main seismic wave types and fundamental properties](2_Seismic_waves/1_Seismic_Waves.ipynb)
-    - [Reflection, refraction and conversion of phases](2_Seismic_waves/2_Transmission.ipynb)
-    - [Dispersion and attenuation](2_Seismic_waves/3_Dispersion_and_Attenuation.ipynb)
+    - [Simple refraction ray-tracing](2_Seismic_waves/2_Refraction.ipynb)
 3. [Seismic hazard](3_Hazard/README.md) *Incomplete*
     - [Magnitude-frequency relations](3_Hazard/1_Magnitude_Frequency.ipynb)
     - [Earthquake clustering](3_Hazard/2_Earthquake_Clustering.ipynb)
@@ -36,7 +36,7 @@ The course covers:
     
 ## How to use these notebooks
 1. If using github:
-    - Fork this repository;
+    - Fork this repository (forking will allow you to keep your local changes seperate from changes here);
     - Clone (`git clone ...` where ... is the url given by the *big green button*) to your local machine
 1. If just downloading:
     - Download using the *big green button*
