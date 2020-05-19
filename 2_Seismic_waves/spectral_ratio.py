@@ -144,9 +144,9 @@ def spectral_ratio(
     # Both traces need to be the same length to generate the same frequency sampling
     length = max(tr1.stats.npts, tr2.stats.npts)
     if tr1.stats.npts != length:
-        tr1.data = np.append([tr1.data, np.zeros(length - tr1.stats.npts)])
+        tr1.data = np.append(tr1.data, np.zeros(length - tr1.stats.npts))
     if tr2.stats.npts != length:
-        tr2.data = np.append([tr2.data, np.zeros(length - tr2.stats.npts)])
+        tr2.data = np.append(tr2.data, np.zeros(length - tr2.stats.npts))
     
     spectra1 = amplitude_spectra(tr1)
     spectra2 = amplitude_spectra(tr2)
