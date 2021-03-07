@@ -1,7 +1,7 @@
 # VUW GPHS445: Observational Earthquake Seismology
 ## Jupyter notebooks for the GPHS445 course taught at Victoria University of Wellington
 
-[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
+[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CircleCI](https://circleci.com/gh/calum-chamberlain/GPHS445_notebooks.svg?style=svg&circle-token=1a58ff80d0b826d24bf8b733e205775e545d9bee)](https://circleci.com/gh/calum-chamberlain/GPHS445_notebooks)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/calum-chamberlain/GPHS445_notebooks/master)
@@ -10,28 +10,12 @@ This repository contains relevant notebooks and links to notebooks to help stude
 through practical elements of observational seismology. This is **NOT** an exhaustive
 textbook for observational seismology.
 
-The course covers:
-1. [Recording and processing digital seismic data](1_Processing_and_recording/README.md)
-    - [Introduction to Python](1_Processing_and_recording/0_Python.ipynb)
-    - [How seismographs work](1_Processing_and_recording/1_Seismographs.ipynb)
-    - [How digitizers work](1_Processing_and_recording/2_Digitizers.ipynb)
-    - [Fourier transforms](1_Processing_and_recording/3_Fourier_Transforms.ipynb)
-    - [Filtering and resampling](1_Processing_and_recording/4_Filtering_Resampling.ipynb)
-    - [Introduction to Obspy](1_Processing_and_recording/5_Intro_To_Obspy.ipynb) seismic data with [Obspy](http://docs.obspy.org/)
-2. [Introduction to seismic waves](2_Seismic_waves/README.md) *Incomplete*
-    - [Main seismic wave types and fundamental properties](2_Seismic_waves/1_Seismic_Waves.ipynb)
-    - [Simple refraction ray-tracing](2_Seismic_waves/2_Refraction.ipynb)
-3. [Seismic hazard](3_Hazard/README.md) *Incomplete*
-    - [Magnitude-frequency relations](3_Hazard/1_Magnitude_Frequency.ipynb)
-    - [Earthquake clustering](3_Hazard/2_Earthquake_Clustering.ipynb)
-    - [Aftershock forecasting](3_Hazard/3_Aftershock_Forecasting.ipynb)
-4. [Building an earthquake catalog](4_Building_a_catalog/README.md)
-    - [Earthquake detection](4_Building_a_catalog/1_Earthquake_Detection.ipynb)
-    - [Phase picking](4_Building_a_catalog/2_Phase_Picking.ipynb)
-    - [Earthquake location](4_Building_a_catalog/3_Earthquake_Location.ipynb)
-    - [Magnitude calculation](4_Building_a_catalog/4_Magnitudes.ipynb)
-    - [Focal mechanism determination](4_Building_a_catalog/5_Focal_Mechanisms.ipynb)
-    - [Source-time functions](4_Building_a_catalog/6_Source_Time_Functions.ipynb)
+These notebooks cover:
+1. [Introduction to handling seismic data with ObsPy](1_Intro_to_processing.ipynb)
+2. [Fundamentals of Fourier analysis for Seismic data](2_Fourier_analysis.ipynb)
+3. [Earthquake detection and seismic phase identification](3_Earthquake_detection_and_phase_analysis.ipynb)
+4. [Earthquake location](4_Earthquake_Location.ipynb)
+5. [Magnitude and focal mechanisms](5_Magnitudes_and_focal_mechanisms.ipynb)
 
     
 ## How to use these notebooks
@@ -57,9 +41,3 @@ The course covers:
    git commit -m "Some memorable commit message"
    git push origin master
    ```
-
-## To use the earthquake location and focal mechanism notebook
-
-You will need to have seisan installed.  See the notes in the 
-[earthquake location](4_Building_a_catalog/3_Earthquake_Location.ipynb) notebook
-for some brief instructions appropriate for the VUW linux lab.
