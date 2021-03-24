@@ -148,7 +148,8 @@ class Geographic():
                         magnitude=self.magnitude)
 
 
-def update_model(p_times, p_locations, s_times, s_locations, model, vp, vs):
+def update_model(p_times, p_locations, s_times, s_locations, model, vp, vs,
+                 norm: int = 2):
     """
     Recompute model to minimise residuals.
 
@@ -197,7 +198,7 @@ def update_model(p_times, p_locations, s_times, s_locations, model, vp, vs):
         "Model updated to: "
         "(time {0:.2f}, x {1:.2f}, y {2:.2f} z {3:.2f})".format(
         model["time"], model["x"], model["y"], model["z"]))
-    return model, np.linalg.norm(model_change, 2)
+    return model, np.linalg.norm(model_change, norm)
 
 
 def _residual(model, obs_loc, obs_time, velocity, return_distance=False):
@@ -208,8 +209,8 @@ def _residual(model, obs_loc, obs_time, velocity, return_distance=False):
     time = model["time"] + distance / velocity
     residual = obs_time - time
     LOGGER.debug(
-        "Distance to station: {0:.2f}\tResidual: {1:.2f}".format(
-            distance, residual))
+        "Distance to station: {0:6.2f}\tTime: {1:4.2f}\tVelocity: {2:.2f}\tResidual: {3:.2f}".format(
+            distance, time, velocity, residual))
     if return_distance:
         return residual, distance
     return residual
@@ -217,7 +218,7 @@ def _residual(model, obs_loc, obs_time, velocity, return_distance=False):
 
 def geiger_locate_lat_lon(p_times, p_locations, s_times, s_locations, vp, vs,
                           max_it=10, convergence=0.1, starting_depth=5.0,
-                          plot=False):
+                          plot=False, l2norm: bool = True):
     """
     Locate a seismic source using a simple linearised inversion.
 
@@ -248,12 +249,14 @@ def geiger_locate_lat_lon(p_times, p_locations, s_times, s_locations, vp, vs,
              for p in p_locations]
     s_xyz = [Geographic(latitude=p["lat"], longitude=p["lon"], depth=p["z"])
              for p in s_locations]
-    origin = p_xyz[0]
+    origin = Geographic(latitude=p_xyz[0].latitude,
+                        longitude=p_xyz[0].longitude,
+                        depth=0.0)
 
     p_xyz = [p.to_xyz(origin, 0, 90) for p in p_xyz]
     s_xyz = [p.to_xyz(origin, 0, 90) for p in s_xyz]
-    p_xyz = [{"x": p.x, "y": p.y, "z": p.z} for p in p_xyz]
-    s_xyz = [{"x": p.x, "y": p.y, "z": p.z} for p in s_xyz]
+    p_xyz = [{"x": p.x, "y": p.y, "z": -p.z} for p in p_xyz]
+    s_xyz = [{"x": p.x, "y": p.y, "z": -p.z} for p in s_xyz]
 
     # Convert from UTCDateTime to float
     _time = min(np.concatenate([p_times, s_times]))
@@ -263,7 +266,7 @@ def geiger_locate_lat_lon(p_times, p_locations, s_times, s_locations, vp, vs,
     model = geiger_locate(
         p_times=_p_times, p_locations=p_xyz, s_times=_s_times,
         s_locations=s_xyz, vp=vp, vs=vs, max_it=max_it, convergence=convergence,
-        starting_depth=starting_depth, plot=plot)
+        starting_depth=starting_depth, plot=plot, l2norm=l2norm)
     
     # convert location back to lat lon
     model_time = _time + model["time"]
@@ -275,7 +278,8 @@ def geiger_locate_lat_lon(p_times, p_locations, s_times, s_locations, vp, vs,
 
 
 def geiger_locate(p_times, p_locations, s_times, s_locations, vp, vs,
-                  max_it=10, convergence=0.1, starting_depth=5.0, plot=False):
+                  max_it=10, convergence=0.1, starting_depth=5.0, plot=False,
+                  l2norm: bool = True):
     """
     Locate a seismic source using a simple linearised inversion.
 
@@ -306,6 +310,11 @@ def geiger_locate(p_times, p_locations, s_times, s_locations, vp, vs,
     from mpl_toolkits.mplot3d import Axes3D
     from copy import deepcopy
 
+    if l2norm:
+        norm = 2
+    else:
+        norm = 1
+
     def norm_residual(model):
         r = []
         for i, p_loc in enumerate(p_locations):
@@ -314,7 +323,7 @@ def geiger_locate(p_times, p_locations, s_times, s_locations, vp, vs,
         for i, s_loc in enumerate(s_locations):
             r.append(_residual(
                 model=model, obs_loc=s_loc, obs_time=s_times[i], velocity=vs))
-        return np.linalg.norm(r, 2)
+        return np.linalg.norm(r, norm)
 
     model = deepcopy(p_locations[np.where(p_times == min(p_times))[0][0]])
     model.update({"z": starting_depth, "time": min(p_times)})
@@ -331,7 +340,7 @@ def geiger_locate(p_times, p_locations, s_times, s_locations, vp, vs,
     for i in range(max_it):
         model, model_change = update_model(
             p_times=p_times, p_locations=p_locations, s_times=s_times,
-            s_locations=s_locations, model=model, vp=vp, vs=vs)
+            s_locations=s_locations, model=model, vp=vp, vs=vs, norm=norm)
         if model["z"] < 0:
             print("AIRQUAKE! - flipping sign")
             model.update({"z": -1 * model["z"]})
@@ -344,7 +353,7 @@ def geiger_locate(p_times, p_locations, s_times, s_locations, vp, vs,
             break
 
     if plot:
-        fig = plt.figure()
+        fig = plt.figure(figsize=(5, 10))
         scatter_ax = fig.add_subplot(2, 1, 1, projection='3d')
         x = [m["x"] for m in models]
         y = [m["y"] for m in models]
