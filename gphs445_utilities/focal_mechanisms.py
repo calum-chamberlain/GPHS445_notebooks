@@ -91,14 +91,16 @@ class FocalMechanism():
             if pick.polarity and pick.phase_hint.startswith("P"):
                 # Get the arrival
                 pick_seed_id = pick.waveform_id.get_seed_string()
+                print(f"Found polarity of {pick.polarity} for {pick_seed_id}")
                 for arr in origin.arrivals:
                     arr_pick = arr.pick_id.get_referred_object()
-                    if arr_pick and arr_pick.get_seed_string() == pick_seed_string:
+                    if arr_pick and arr_pick.waveform_id.get_seed_string() == pick_seed_id:
                         if arr.phase == "P":
                             polarity = Polarity(arr.azimuth + 180,
                                                 arr.takeoff_angle,
                                                 pick.polarity,
                                                 station=pick_seed_id)
+                            polarities.append(polarity)
                             break
                 else:
                     print(f"No arrival found for polarity pick on {pick_seed_id}")
