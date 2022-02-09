@@ -7,7 +7,7 @@ dependencies:
   - jupyter
   - matplotlib
   - scipy>=1.2.0
-  - numpy
+  - numpy<=1.21
   - obspy
   - pytest
   - nbval
