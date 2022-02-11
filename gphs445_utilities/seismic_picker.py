@@ -35,6 +35,7 @@ class SeismicPicker():
     """
     def __init__(self, st, event_in=None):
         self.event_in = event_in
+        self.st = st
         if self.event_in is None:
             self.event_out = Event()
         else:
@@ -45,27 +46,29 @@ class SeismicPicker():
                 if p.waveform_id.get_seed_string() not in [
                     tr.id for tr in st]]
             self.event_out.picks = unchanged_picks
+        n_traces = len(st)
+        self.fig, self.axes = plt.subplots(
+            figsize=(8, 8), dpi=100, sharex=True, nrows=n_traces, ncols=1,
+            squeeze=False)
+
+    def _run(self):
         utc = timezone.utc
 
         style.use("ggplot")
-        st = st.merge()
+        st = self.st.copy().merge()
         st.sort(
             ["network", "station", "location", "channel", "starttime"])
         plot_start = min([tr.stats.starttime for tr in st]).datetime
         plot_end = max([tr.stats.endtime for tr in st]).datetime
-        n_traces = len(st)
-        self.fig, axes = plt.subplots(
-            figsize=(8, 8), dpi=100, sharex=True, nrows=n_traces, ncols=1,
-            squeeze=False)
         self.fig.suptitle("Close plot to end picking session")
         self.p_picks, self.s_picks, self.amplitude_picks, self.duration_picks = ({}, {}, {}, {})
-        for row, tr in zip(axes, st):
+        for row, tr in zip(self.axes, st):
             # Get linked pick
             p_pick_time, s_pick_time, amplitude, duration, polarity = (
                 None, None, None, None, None)
-            if event_in is not None:
+            if self.event_in is not None:
                 linked_picks = [
-                    p for p in event_in.picks
+                    p for p in self.event_in.picks
                     if p.waveform_id.get_seed_string() == tr.id]
                 # Get linked P phases
                 linked_p_picks = [p for p in linked_picks if p.phase_hint == "P"]
@@ -95,7 +98,7 @@ class SeismicPicker():
                     s_pick_time = linked_s_picks[0].time
                 # Get linked amplitudes
                 linked_amplitudes = [
-                    a for a in event_in.amplitudes
+                    a for a in self.event_in.amplitudes
                     if a.waveform_id.get_seed_string() == tr.id]
                 linked_amplitude_points = [
                     a for a in linked_amplitudes if a.type != 'END']
@@ -190,7 +193,14 @@ class SeismicPicker():
     def pick(self):
         """ Enter the interactive plotting loop - blocking. """
         plt.ion()
+        self._run()
         plt.show(block=True)
+        try:
+            while self.fig.number in plt.get_fignums():
+                plt.pause(0.1)
+        except Excpetion as e:
+            plt.close(self.fig.number)
+            raise e
         print("Returning event")
         return self.event_out
 
