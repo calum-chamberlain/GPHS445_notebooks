@@ -16,3 +16,6 @@ dependencies:
   - geographiclib
   - widgetsnbextension
   - ipympl
+  - pip
+  - pip:
+      - mplstereonet

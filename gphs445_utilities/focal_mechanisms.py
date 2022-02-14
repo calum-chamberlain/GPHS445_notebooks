@@ -75,8 +75,8 @@ class FocalMechanism():
         nodal_plane_2: NodalPlane = None,
         polarities: List[Polarity] = None
     ):
-        self.nodal_plane_1 = nodal_plane_1 or NodalPlane(0, 90, 0)
-        self.nodal_plane_2 = nodal_plane_2 or NodalPlane(0, 90, 0)
+        self.nodal_plane_1 = nodal_plane_1 or NodalPlane(45, 45, 45)
+        self.nodal_plane_2 = nodal_plane_2 or NodalPlane(35, 35, 35)
         self.polarities = polarities or []
 
     @classmethod
@@ -96,8 +96,13 @@ class FocalMechanism():
                     arr_pick = arr.pick_id.get_referred_object()
                     if arr_pick and arr_pick.waveform_id.get_seed_string() == pick_seed_id:
                         if arr.phase == "P":
-                            polarity = Polarity(arr.azimuth + 180,
-                                                arr.takeoff_angle,
+                            if arr.takeoff_angle < 0:
+                                toa = abs(arr.takeoff_angle)
+                                az = arr.azimuth % 360
+                            else:
+                                toa = arr.takeoff_angle
+                                az = (arr.azimuth + 180) % 360
+                            polarity = Polarity(az, toa,
                                                 pick.polarity,
                                                 station=pick_seed_id)
                             polarities.append(polarity)
@@ -116,7 +121,7 @@ class FocalMechanism():
         ax.legend()
         ax.grid()
         if show:
-            plt.show()
+            plt.show(block=True)
         return fig
 
     def plot_polarities(self, ax = None, show: bool = False, label: bool = True) -> plt.Axes:
@@ -125,6 +130,7 @@ class FocalMechanism():
             ax = fig.add_subplot(111, projection="stereonet")
         for polarity in self.polarities:
             toa, baz = polarity.toa, polarity.azimuth
+            assert 0 <= toa <= 180, f"Take off angle ({toa}) does not lie between 0 and 180"
             if 0. <= toa < 90.:
                 toa = 90. - toa  # complement for downward angles
             elif 90. <= toa <= 180.:
@@ -136,13 +142,15 @@ class FocalMechanism():
                 plot_kwargs = POLARITY_PROPS["down"]
             else:
                 plot_kwargs = POLARITY_PROPS["unknown"]
+            # Ensure boundedness
+            baz = baz % 360
             ax.rake(baz, toa, 90, **plot_kwargs)
             if label:
                 lon, lat = mplstereonet.rake(baz, toa, 90)
                 ax.text(lon[0], lat[0], polarity.station)
             plot_kwargs.pop("label", None)  # Only label once
         if show:
-            plt.show()
+            plt.show(block=True)
         return ax
 
     def tweak_np2(self, increment: float = 0.5, show: bool = True):
@@ -197,7 +205,7 @@ class FocalMechanism():
         rake_slider.on_changed(update)
 
         if show:
-            plt.show()
+            plt.show(block=True)
         return fig
 
     def find_planes(self, increment: float = 0.5, show: bool = True):
@@ -288,7 +296,7 @@ class FocalMechanism():
         np2rake_slider.on_changed(update_np2)
 
         if show:
-            plt.show()
+            plt.show(block=True)
         return fig
 
 """

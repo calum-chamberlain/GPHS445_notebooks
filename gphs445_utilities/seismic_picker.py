@@ -134,7 +134,7 @@ class SeismicPicker():
                 if p_pick_time is not None:
                     p_pick_line = col.add_line(
                         Line2D(xdata=[p_pick_time.datetime.replace(tzinfo=utc),
-                                    p_pick_time.datetime.replace(tzinfo=utc)],
+                                      p_pick_time.datetime.replace(tzinfo=utc)],
                             ydata=list(col.get_ylim()), color='r'))
                 else:
                     p_pick_line = col.add_line(
@@ -142,7 +142,7 @@ class SeismicPicker():
                 if s_pick_time is not None:
                     s_pick_line = col.add_line(
                         Line2D(xdata=[s_pick_time.datetime.replace(tzinfo=utc),
-                                    s_pick_time.datetime.replace(tzinfo=utc)],
+                                      s_pick_time.datetime.replace(tzinfo=utc)],
                             ydata=list(col.get_ylim()), color="b"))
                 else:
                     s_pick_line = col.add_line(
@@ -170,7 +170,7 @@ class SeismicPicker():
 
                 self.p_picks.update(
                     {tr.id: Picker(p_pick_line, button=1, polarity=polarity,
-                                allow_polarity=True, tr_id=tr.id)})
+                                   allow_polarity=True, tr_id=tr.id)})
                 self.s_picks.update(
                     {tr.id: Picker(s_pick_line, button=3, tr_id=tr.id)})
                 self.amplitude_picks.update(
@@ -207,7 +207,8 @@ class SeismicPicker():
     def show(self):
         """ Show the state of play. Non-blocking."""
         print("Enetering non-interactive state.")
-        plt.show(block=False)
+        self._run()
+        plt.show(block=True)
         return
 
     def process(self, event):
