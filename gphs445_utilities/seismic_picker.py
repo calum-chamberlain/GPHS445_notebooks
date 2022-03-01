@@ -198,7 +198,7 @@ class SeismicPicker():
         try:
             while self.fig.number in plt.get_fignums():
                 plt.pause(0.1)
-        except Excpetion as e:
+        except Exception as e:
             plt.close(self.fig.number)
             raise e
         print("Returning event")
