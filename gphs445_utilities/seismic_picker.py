@@ -8,18 +8,22 @@ License: LGPL v.3
 """
 
 from matplotlib.dates import num2date, date2num
-from obspy import UTCDateTime
+from obspy import UTCDateTime, read_events
 import numpy as np
 import getpass
 from obspy import UTCDateTime
 from obspy.core.event import (
     Event, Pick, WaveformStreamID, CreationInfo, Amplitude)
 from datetime import timezone
+import logging
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.lines import Line2D
 from matplotlib import style
+
+
+Logger = logging.getLogger(__name__)
 
 
 class SeismicPicker():
@@ -73,7 +77,7 @@ class SeismicPicker():
                 # Get linked P phases
                 linked_p_picks = [p for p in linked_picks if p.phase_hint == "P"]
                 if len(linked_p_picks) > 1:
-                    print(
+                    Logger.warning(
                         "Found {0} P picks for {1}, using the first at {2}".format(
                             len(linked_p_picks), tr.id, linked_p_picks[0].time))
                 if len(linked_p_picks) > 0:
@@ -91,7 +95,7 @@ class SeismicPicker():
                 # Get linked S phases
                 linked_s_picks = [p for p in linked_picks if p.phase_hint == "S"]
                 if len(linked_s_picks) > 1:
-                    print(
+                    Logger.warning(
                         "Found {0} S picks for {1}, using the first at {2}".format(
                             len(linked_s_picks), tr.id, linked_s_picks[0].time))
                 if len(linked_s_picks) > 0:
@@ -103,7 +107,7 @@ class SeismicPicker():
                 linked_amplitude_points = [
                     a for a in linked_amplitudes if a.type != 'END']
                 if len(linked_amplitude_points) > 1:
-                    print("Found multiple amplitude picks, using the first")
+                    Logger.warning("Found multiple amplitude picks, using the first")
                 if len(linked_amplitude_points) > 0:
                     amplitude = {
                         "amplitude": linked_amplitude_points[0].generic_amplitude,
@@ -113,7 +117,7 @@ class SeismicPicker():
                 linked_durations = [
                     a for a in linked_amplitudes if a.type == 'END']
                 if len(linked_durations) > 1:
-                    print("Found multiple durations, using the first")
+                    Logger.warning("Found multiple durations, using the first")
                 if len(linked_durations) > 0:
                     duration = {
                         "duration": linked_durations[0].generic_amplitude,
@@ -135,38 +139,43 @@ class SeismicPicker():
                     p_pick_line = col.add_line(
                         Line2D(xdata=[p_pick_time.datetime.replace(tzinfo=utc),
                                       p_pick_time.datetime.replace(tzinfo=utc)],
-                            ydata=list(col.get_ylim()), color='r'))
+                               ydata=list(col.get_ylim()), color='r',
+                               animated=True))
                 else:
                     p_pick_line = col.add_line(
-                        Line2D(xdata=[], ydata=[], color="r"))
+                        Line2D(xdata=[], ydata=[], color="r", animated=True))
                 if s_pick_time is not None:
                     s_pick_line = col.add_line(
                         Line2D(xdata=[s_pick_time.datetime.replace(tzinfo=utc),
                                       s_pick_time.datetime.replace(tzinfo=utc)],
-                            ydata=list(col.get_ylim()), color="b"))
+                               ydata=list(col.get_ylim()), color="b",
+                               animated=True))
                 else:
                     s_pick_line = col.add_line(
-                        Line2D(xdata=[], ydata=[], color="b"))
+                        Line2D(xdata=[], ydata=[], color="b", animated=True))
                 if amplitude is not None:
                     amplitude_pick = col.add_line(
                         Line2D(xdata=[amplitude["time"].datetime.replace(
                                 tzinfo=utc)],
-                            ydata=[amplitude["amplitude"]],
-                            marker="o", markerfacecolor="r"))
+                               ydata=[amplitude["amplitude"]],
+                               marker="o", markerfacecolor="r", alpha=0.75,
+                               animated=True))
                 else:
                     amplitude_pick = col.add_line(
-                        Line2D(xdata=[], ydata=[], marker="+",
-                            markerfacecolor="r", alpha=0.5))
+                        Line2D(xdata=[], ydata=[], marker="o",
+                               markerfacecolor="r", alpha=0.75,
+                               animated=True))
                 if duration is not None:
                     duration_pick = col.add_line(
                         Line2D(xdata=[
                             duration["time"].datetime.replace(tzinfo=utc),
                             duration["time"].datetime.replace(tzinfo=utc)],
                             ydata=list(col.get_ylim()),
-                            color="k", linestyle="--"))
+                            color="k", linestyle="--", animated=True))
                 else:
                     duration_pick = col.add_line(
-                        Line2D(xdata=[], ydata=[], color="k", linestyle="--"))
+                        Line2D(xdata=[], ydata=[], color="k", linestyle="--",
+                               animated=True))
 
                 self.p_picks.update(
                     {tr.id: Picker(p_pick_line, button=1, polarity=polarity,
@@ -177,6 +186,19 @@ class SeismicPicker():
                     {tr.id: Picker(amplitude_pick, button='a', tr_id=tr.id)})
                 self.duration_picks.update(
                     {tr.id: Picker(duration_pick, button='e', tr_id=tr.id)})
+        
+        # Need to render the block before grabbing the background
+        plt.show(block=False)
+        # Need the wait until the render is complete
+        plt.pause(0.1)
+        # Cache the figure
+        self.bg = self.fig.canvas.copy_from_bbox(self.fig.bbox)
+        
+        # Draw the animated artists
+        self._draw_animated()
+                
+        self.fig.canvas.blit(self.fig.bbox)
+        
         print(
             "Make your picks using:\n"
             "\tleft mouse button: P\n\tright mouse button: S\n\t'a': amplitude"
@@ -186,33 +208,43 @@ class SeismicPicker():
             "Picks can be deleted by hovering over them and pressing"
             " the middle mouse button")
         self.fig.canvas.mpl_connect("close_event", self.process)
+        self.fig.canvas.mpl_connect("draw_event", self._on_draw)
         self.fig.subplots_adjust(wspace=0, hspace=0)
         self.fig.canvas.draw_idle()
         plt.pause(0.001)
-
+        
+    def _draw_animated(self):        
+        for things in (self.p_picks, self.s_picks, self.amplitude_picks, self.duration_picks):
+            for thing in things.values():
+                thing.line.axes.draw_artist(thing.line)
+                
+    def _on_draw(self, event):
+        if event is not None:
+            if event.canvas != self.fig.canvas:
+                raise RuntimeError
+        self.bg = self.fig.canvas.copy_from_bbox(self.fig.bbox)
+        self._draw_animated()
+                
     def pick(self):
         """ Enter the interactive plotting loop - blocking. """
-        plt.ion()
         self._run()
-        plt.show(block=True)
         try:
             while self.fig.number in plt.get_fignums():
                 plt.pause(0.1)
         except Exception as e:
             plt.close(self.fig.number)
             raise e
-        print("Returning event")
+        Logger.info("Returning event")
         return self.event_out
 
     def show(self):
         """ Show the state of play. Non-blocking."""
-        print("Enetering non-interactive state.")
+        Logger.debug("Enetering non-interactive state.")
         self._run()
-        plt.show(block=True)
         return
 
     def process(self, event):
-        print("Finished picking.")
+        Logger.info("Finished picking.")
         for trace_id, picker in self.p_picks.items():
             if picker.time is not None:
                 if picker.polarity == "up":
@@ -256,10 +288,10 @@ class SeismicPicker():
                 if p.phase_hint == "P" and
                 p.waveform_id.get_seed_string() == trace_id]
             if len(duration_start) == 0:
-                print("No matching P for duration on {0}".format(trace_id))
+                Logger.error("No matching P for duration on {0}".format(trace_id))
                 continue
             duration_start = sorted([p.time for p in duration_start])[0]
-            print("Duration: {0:.4f}s".format(picker.time - duration_start))
+            Logger.info("Duration: {0:.4f}s".format(picker.time - duration_start))
             duration_pick = Pick(
                 time=picker.time, phase_hint="END",
                 waveform_id=WaveformStreamID(seed_string=trace_id),
@@ -272,7 +304,7 @@ class SeismicPicker():
                 waveform_id=WaveformStreamID(seed_string=trace_id),
                 evaluation_mode="manual",
                 creation_info=CreationInfo(author=getpass.getuser())))
-        print("Finished processing event. Returning")
+        Logger.debug("Finished processing event. Returning")
         return
 
 
@@ -319,20 +351,21 @@ class Picker:
                 self.ys = [event.ydata]
                 self.time = UTCDateTime(num2date(event.xdata))
                 self.amplitude = event.ydata
-                print("Amplitude pick made at {0} with amplitude "
-                      "{1:.2g}".format(self.time, self.amplitude))
+                Logger.info(
+                    "Amplitude pick made at {0} with amplitude "
+                    "{1:.2g}".format(self.time, self.amplitude))
             elif self.button == "e":
                 self.xs = [num2date(event.xdata), num2date(event.xdata)]
                 self.ys = list(self.line.axes.get_ylim())
                 self.time = UTCDateTime(num2date(event.xdata))
-                print("Duration end pick made at {0}".format(self.time))
+                Logger.info("Duration end pick made at {0}".format(self.time))
             else:
-                print("I only know what to do with a and e")
+                Logger.warning("I only know what to do with a and e")
         elif event.key in ["up", "down"] and self.allow_polarity:
             if self.time is not None:
                 diff = abs((self.xs[0] - num2date(event.xdata)).total_seconds())
                 if diff < self.delete_threshold:
-                    print("Polarity {0} recorded for {1}".format(
+                    Logger.info("Polarity {0} recorded for {1}".format(
                         event.key, self.tr_id))
                     self.polarity = event.key
         else:
@@ -349,7 +382,7 @@ class Picker:
             self.xs = [num2date(event.xdata), num2date(event.xdata)]
             self.ys = list(self.line.axes.get_ylim())
             self.time = UTCDateTime(num2date(event.xdata))
-            print("Pick made at {0}".format(self.time))
+            Logger.info("Pick made at {0}".format(self.time))
         elif event.button == 2:
             # Delete the pick
             if self.time is not None:
@@ -357,7 +390,7 @@ class Picker:
                 if diff < self.delete_threshold:
                     self.xs = []
                     self.ys = []
-                    print("Deleted pick at time {0}".format(self.time))
+                    Logger.info("Deleted pick at time {0}".format(self.time))
                     self.time = None
                     self.line.set_data(self.xs, self.ys)
                     self.line.axes.draw_artist(self.line)
@@ -385,7 +418,7 @@ class Picker:
     def __repr__(self):
         return "Picker object set to time {0} with amplitude {1}".format(
             self.time, self.amplitude)
-
+    
 
 if __name__ == "__main__":
     import argparse
@@ -408,8 +441,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--highcut", type=float, required=False,
         help="Highcut filter to apply before picking")
+    parser.add_argument(
+        "-v", "--verbose",
+        action="store_true", help="Flag to increase verbosity")
 
     args = vars(parser.parse_args())
+    
+    # Set up logging
+    log_level=logging.INFO
+    if args['verbose']:
+        log_level=logging.DEBUG
+    logging.basicConfig(
+        level=log_level, format="%(asctime)s\t%(name)s\t%(levelname)s\t%(message)s")
+    
     if args['file'] is None:
         st = read()
     else:
@@ -417,7 +461,7 @@ if __name__ == "__main__":
     if args["infile"] is not None:
         cat = read_events(args["infile"])
         if len(cat) > 1:
-            print("{0} events in catalog, using the first".format(len(cat)))
+            Logger.info("{0} events in catalog, using the first".format(len(cat)))
         event_in = cat[0]
     else:
         event_in = None
@@ -433,7 +477,7 @@ if __name__ == "__main__":
 
     event_out = SeismicPicker(st, event_in=event_in).pick()
     if len(event_out.picks) > 0:
-        print("Saving picks to {0}".format(args['outfile']))
+        Logger.info("Saving picks to {0}".format(args['outfile']))
         event_out.write(args["outfile"], format="QUAKEML")
     else:
-        print("No picks made, no outfile")
+        Logger.warning("No picks made, no outfile")
