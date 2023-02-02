@@ -11,25 +11,28 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8]
+        python-version: [3.10]
       fail-fast: false
 
     steps:
       - name: Checkout and get LFS
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: true
       - name: Checkout LFS objects
         run: git lfs checkout
 
       - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v2.1.1
         with:
-          miniconda-version: 'latest'
+          miniforge-variant: Mambaforge
+          miniforge-version: lastest
           python-version: ${{ matrix.python-version }}
           activate-environment: gphs445
-          environment-file: environment.yml
-          condarc-file: .github/test_condarc.yml
+          use-mamba: true
+
+      - name: Update Env
+        run: mamba env update -n gphs445 environment.yml -f .github/test_condarc.yml
 
       - name: run test suite
         shell: bash -l {0}
