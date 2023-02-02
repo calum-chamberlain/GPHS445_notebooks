@@ -150,7 +150,7 @@ def resample_and_plot(tr: Trace, sampling_rate: float):
 
     # Multiply by a hanning window to stabilise the interpolation
     large_w = np.fft.ifftshift(
-        get_window('hanning', tr_out.stats.npts))
+        get_window('hann', tr_out.stats.npts))
     x_r *= large_w[:tr_out.stats.npts // 2 + 1]
     x_i *= large_w[:tr_out.stats.npts // 2 + 1]
 
