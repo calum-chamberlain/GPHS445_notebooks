@@ -31,7 +31,7 @@ jobs:
           activate-environment: gphs445
           environment-file: environment.yml
           condarc-file: .github/test_condarc.yml
-          auto-activate=base: false
+          auto-activate-base: false
 
       - name: run test suite
         shell: bash -l {0}
