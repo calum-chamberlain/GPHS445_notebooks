@@ -26,14 +26,12 @@ jobs:
       - name: Setup conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          miniforge-variant: Mambaforge
-          miniforge-version: lastest
+          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           activate-environment: gphs445
-          use-mamba: true
-
-      - name: Update Env
-        run: mamba env update -n gphs445 environment.yml -f .github/test_condarc.yml
+          environment-file: environment.yml
+          condarc-file: .github/test_condarc.yml
+          auto-activate=base: false
 
       - name: run test suite
         shell: bash -l {0}
