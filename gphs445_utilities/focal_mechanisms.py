@@ -12,6 +12,11 @@ from obspy.core.event import Event
 from typing import List
 from collections import namedtuple
 
+# Hack to cope with numpy change
+import numpy as np
+
+np.float = float
+
 Polarity = namedtuple("Polarity", ("azimuth", "toa", "polarity", "station"))
 
 UPS = ("U", "up", "positive", "compressional")
