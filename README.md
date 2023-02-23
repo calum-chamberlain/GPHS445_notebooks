@@ -16,6 +16,7 @@ These notebooks cover:
 3. [Earthquake detection and seismic phase identification](3_Earthquake_detection_and_phase_analysis.ipynb)
 4. [Earthquake location](4_Earthquake_Location.ipynb)
 5. [Magnitude and focal mechanisms](5_Magnitudes_and_focal_mechanisms.ipynb)
+6. [Earthquake statistics](6_Earthquake_statistics.ipynb)
 
     
 ## How to use these notebooks
