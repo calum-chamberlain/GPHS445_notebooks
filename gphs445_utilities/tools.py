@@ -11,12 +11,18 @@ import numpy as np
 from obspy import Trace
 
 
+AMP_LIMIT = 1e-5  # Limit phase to only plot amplitudes above this.
+
+
 def plot_fft(
     x: np.array, 
     y: np.array, 
     strict_length: bool = True,
     reconstruct: bool = True,
     log_y: bool = True,
+    log_x: bool = True,
+    plot_phase: bool = False,
+    fft_len: int = None
 ):
     """
     Calculate the FFT of a discretely sampled array and plot the spectra.
@@ -34,8 +40,15 @@ def plot_fft(
     reconstruct:
         Whether to plot the reconstructed time-series or not.
     log_y:
-        Whether to use a logathirmic scale on the y (amplitude) axis of the
-        amplitude spectra or not.
+        Whether to use a logathirmic scale on the y (amplitude)
+        axis of the amplitude spectra or not.
+    log_x:
+        Whether to use a logaritmic scale on the x (frequency) axes of the
+        spectra or not.
+    plot_phase:
+        Whether to plot the phase spectrum as well as the amplitude spectrum.
+    fft_len:
+        Length of fft to use - ignored if strict_len = True.
 
     Returns
     -------
@@ -44,11 +57,12 @@ def plot_fft(
     """
     import matplotlib.pyplot as plt
     from scipy import fftpack
+    import numpy.fft as fftlib
     
     N = len(y)
     if strict_length:
         fft_len = N
-    else:
+    elif not fft_len:
         # Find the next fast length for the FFT
         fft_len = fftpack.next_fast_len(N)
     
@@ -60,48 +74,76 @@ def plot_fft(
     assert np.allclose(x[1:] - x[0:-1], dt, atol=1e-20), "Data are not regularly sampled"
 
     # Compute the FFT
-    yf = fftpack.fft(y, n=fft_len)
+    yf = fftlib.fft(y, n=fft_len)
     # Make an array of frequencies that the FFT has been computed for
-    xf = np.linspace(0.0, 1.0 / (2. * dt), int(N / 2))
+    # xf = np.linspace(0.0, 1.0 / (2. * dt), int(N / 2))
+    xf = np.fft.fftfreq(fft_len, dt)[:fft_len//2]
     # Compute the inverse FFT to check that we recover the data.
-    yr = fftpack.ifft(yf)
-    # Get the positive and real component of the FFT - this is the amplitude spectra
-    amplitude_spectra = np.abs(yf[:N//2])
+    yr = fftlib.ifft(yf)
+    # Get the positive magnitude of the FFT - this is the amplitude spectrum
+    amplitude_spectrum = np.abs(yf[:fft_len//2])
+    # Get phase spectrum - this is the argument of the complex sequence
+    phase_spectrum = np.angle(yf[:fft_len//2], deg=True)
+    # Wrap phase 0 -> 2 pi
+    # phase_spectrum = phase_spectrum % (2 * np.pi)
     # Multiply to normalise amplitude spectra to 1.
-    amplitude_spectra *= 2./N
+    amplitude_spectrum *= 2./fft_len
+    # Mask phase spectrum to only show values when there is power in the amplitude spectrum
+    # masked_phase = np.ones_like(phase_spectrum) * np.nan
+    # masked_phase[amplitude_spectrum > AMP_LIMIT] = phase_spectrum[amplitude_spectrum > AMP_LIMIT]
 
     # Everything from here is just code used to make the plot.
+    nrows = 2
     if reconstruct:
-        nrows = 3
-    else:
-        nrows = 2
+        nrows += 1
+    if plot_phase:
+        nrows += 1
+    
+    ts_row, amp_row, phase_row, rs_row = 0, 1, -2, -1
+    
     fig, ax = plt.subplots(nrows=nrows)
     
     # Plot the original time-series
-    ax[0].plot(x, y, label="Time series")
-    ax[0].set_xlabel("Time (s)")
-    ax[0].set_ylabel("Amplitude")
-    ax[0].autoscale(enable=True, axis='both', tight=True)
-    ax[0].legend()
+    ax[ts_row].plot(x, y, label="Time series")
+    ax[ts_row].set_xlabel("Time (s)")
+    ax[ts_row].set_ylabel("Amplitude")
+    ax[ts_row].autoscale(enable=True, axis='both', tight=True)
+    ax[ts_row].legend()
     
     # Plot the amplitude spectrum
-    if log_y:
-        ax[1].loglog(xf, amplitude_spectra, label="Amplitude spectra")
+    if log_y and log_x:
+        ax[amp_row].loglog(xf, amplitude_spectrum, label="Amplitude spectra")
+    elif log_x:
+        ax[amp_row].semilogx(xf, amplitude_spectrum, label="Amplitude spectra")
     else:
-        ax[1].semilogx(xf, amplitude_spectra, label="Amplitude spectra")
-    ax[1].set_xlabel("Frequency (Hz)")
-    ax[1].set_ylabel("Normalised amplitude")
-    ax[1].autoscale(enable=True, axis='both', tight=True)
-    ax[1].legend()
+        ax[amp_row].plot(xf, amplitude_spectrum, label="Amplitude spectra")
+    ax[amp_row].set_xlabel("Frequency (Hz)")
+    ax[amp_row].set_ylabel("Normalised \namplitude")
+    ax[amp_row].autoscale(enable=True, axis='both', tight=True)
+    ax[amp_row].legend()
+    ax[amp_row].grid("on")
+    
+    if plot_phase:
+        ax[amp_row].get_shared_x_axes().join(ax[amp_row], ax[phase_row])
+        if log_x:
+            ax[phase_row].semilogx(xf, phase_spectrum, label="Phase spectra")
+        else:
+            ax[phase_row].plot(xf, phase_spectrum, label="Phase spectra")
+        ax[phase_row].set_xlabel("Frequency (Hz)")
+        ax[phase_row].set_ylabel("Phase \n(degrees)")
+        ax[phase_row].autoscale(enable=True, axis='x', tight=True)
+        ax[phase_row].set_ylim(-180, 180)
+        ax[phase_row].legend()
+        ax[phase_row].grid("on")
     
     if reconstruct:
-        ax[0].get_shared_x_axes().join(ax[0], ax[2])
+        ax[ts_row].get_shared_x_axes().join(ax[ts_row], ax[rs_row])
         # Plot the reconstructed time-series
-        ax[2].plot(x, np.real(yr)[0:len(x)], label="Reconstructed Time-series")
-        ax[2].set_xlabel("Time (s)")
-        ax[2].set_ylabel("Amplitude")
-        ax[2].autoscale(enable=True, axis='both', tight=True)
-        ax[2].legend()
+        ax[rs_row].plot(x, np.real(yr)[0:len(x)], label="Reconstructed Time-series")
+        ax[ts_row].set_xlabel("Time (s)")
+        ax[rs_row].set_ylabel("Amplitude")
+        ax[rs_row].autoscale(enable=True, axis='both', tight=True)
+        ax[rs_row].legend()
 
     return fig
 
