@@ -124,7 +124,8 @@ def plot_fft(
     ax[amp_row].grid("on")
     
     if plot_phase:
-        ax[amp_row].get_shared_x_axes().join(ax[amp_row], ax[phase_row])
+        # ax[amp_row].get_shared_x_axes().join(ax[amp_row], ax[phase_row])
+        ax[amp_row].sharex(ax[phase_row])
         if log_x:
             ax[phase_row].semilogx(xf, phase_spectrum, label="Phase spectra")
         else:
@@ -137,7 +138,8 @@ def plot_fft(
         ax[phase_row].grid("on")
     
     if reconstruct:
-        ax[ts_row].get_shared_x_axes().join(ax[ts_row], ax[rs_row])
+        # ax[ts_row].get_shared_x_axes().join(ax[ts_row], ax[rs_row])
+        ax[ts_row].sharex(ax[rs_row])
         # Plot the reconstructed time-series
         ax[rs_row].plot(x, np.real(yr)[0:len(x)], label="Reconstructed Time-series")
         ax[ts_row].set_xlabel("Time (s)")
