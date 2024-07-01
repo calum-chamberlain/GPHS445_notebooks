@@ -37,7 +37,7 @@ jobs:
         run: mamba env update -n gphs445 -f environment.yml
 
       - name: Install test packages
-        run: mamba env update -n gphs445 .github/test_condarc.yml
+        run: mamba env update -n gphs445 -f .github/test_condarc.yml
 
       - name: run test suite
         shell: bash -l {0}
