@@ -31,7 +31,7 @@ These notebooks cover:
     conda env create -f environment.yml  # Create an environment called gphs445
     source activate gphs445  # Activate the environment - You will need to do this everytime you use the notebooks
     ```
-4. Start jupyter-lab (run `jupyter-lab`) in your repository directory and navigate to the notebook you 
+4. Start jupyter-lab (run `jupyter lab`) in your repository directory and navigate to the notebook you 
    want to work on;
 5. Save any changes you make in the notebook;
 6. When you want to back-up your changes, or when you are happy with them, commit the
