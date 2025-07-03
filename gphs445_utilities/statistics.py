@@ -107,8 +107,8 @@ def calc_b_value(magnitudes, completeness, max_mag=None, plotvar=True):
         ax2.set_ylabel('Number of events used in fit')
         n_ev = ax2.scatter(list(zip(*b_values))[0], list(zip(*b_values))[3],
                            c='g')
-        fig.legend(handles=(b_vals, resid, n_ev),
-                   labels=('b-values', 'residuals', 'number of events'),
+        fig.legend((b_vals, resid, n_ev),
+                   ('b-values', 'residuals', 'number of events'),
                    loc='lower right')
         ax1.set_title('Possible completeness values')
         plt.show()
