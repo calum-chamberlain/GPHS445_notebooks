@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout and get LFS
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
 
@@ -24,20 +24,16 @@ jobs:
         run: git lfs checkout
 
       - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2.1.1
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-variant: Mambaforge
-          miniforge-version: latest
-          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           activate-environment: gphs445
-          use-mamba: true
 
       - name: Update env
-        run: mamba env update -n gphs445 -f environment.yml
+        run: conda env update -n gphs445 -f environment.yml
 
       - name: Install test packages
-        run: mamba env update -n gphs445 -f .github/test_condarc.yml
+        run: conda env update -n gphs445 -f .github/test_condarc.yml
 
       - name: run test suite
         shell: bash -l {0}
