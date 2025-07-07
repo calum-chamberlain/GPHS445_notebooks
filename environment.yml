@@ -15,6 +15,7 @@ dependencies:
   - cartopy
   - geographiclib
   - widgetsnbextension
+  - pyqt
   - pip
   - pip:
       - mplstereonet
