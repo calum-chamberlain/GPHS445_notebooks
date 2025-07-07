@@ -27,6 +27,8 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: ${{ matrix.python-version }}
+          channels: conda-forge,defaults
+          channel-priority: true
           mamba-version: "*"
           activate-environment: gphs445
 
