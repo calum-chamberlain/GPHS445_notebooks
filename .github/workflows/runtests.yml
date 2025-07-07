@@ -27,6 +27,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: ${{ matrix.python-version }}
+          mamba-version: "*"
           activate-environment: gphs445
 
       - name: Update env
